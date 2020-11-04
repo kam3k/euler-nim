@@ -5,6 +5,7 @@ author        = "Marc Gallant"
 description   = "A command line utility that converts euler angles to rotation matrices and quaternions"
 license       = "MIT"
 srcDir        = "src"
+binDir        = "build"
 bin           = @["euler"]
 
 
