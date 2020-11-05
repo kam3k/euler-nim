@@ -30,18 +30,18 @@ proc `[]`*(R: RotationMatrix, i: int, j: int): float =
   ## Operator to read elements from a rotation matrix.
   return R[i][j]
 
-proc `[]=`*(R: var RotationMatrix, i: int, j: int, val: float) =
+proc `[]=`*(R: var RotationMatrix, i: int, j: int, val: float) {.inline.} =
   ## Operator to write to elements of a rotation matrix.
   R[i][j] = val
 
-proc `*`(lhs: RotationMatrix, rhs: RotationMatrix): RotationMatrix =
+func `*`(lhs: RotationMatrix, rhs: RotationMatrix): RotationMatrix =
   ## Operator to multiple two rotation matrices.
   for i in 0..<3:
     for j in 0..<3:
       for k in 0..<3:
         result[i, j] = result[i, j] + lhs[i, k] * rhs[k, j]
 
-proc `==`*(R1: RotationMatrix, R2: RotationMatrix,
+func `==`*(R1: RotationMatrix, R2: RotationMatrix,
     tolerance: float = 1e-6): bool =
   ## Operator to test the equivalency of two rotation matrices.
   for i in 0..<3:
@@ -50,14 +50,14 @@ proc `==`*(R1: RotationMatrix, R2: RotationMatrix,
         return false
   return true
 
-proc `==`*(q1: Quaternion, q2: Quaternion, tolerance: float = 1e-6): bool =
+func `==`*(q1: Quaternion, q2: Quaternion, tolerance: float = 1e-6): bool =
   ## Operator to test the equivalency of two quaternions.
   for i in 0..<4:
     if abs(q1[i] - q2[i]) > tolerance:
       return false
   return true
 
-proc `$`*(R: RotationMatrix): string =
+func `$`*(R: RotationMatrix): string =
   result = "Rotation Matrix:"
   for i in 0..<3:
     result.add("\n")
@@ -66,7 +66,7 @@ proc `$`*(R: RotationMatrix): string =
         result.add(" ")
       result.add(fmt"{R[i, j]:>7.4f}")
 
-proc `$`*(q: Quaternion): string =
+func `$`*(q: Quaternion): string =
   result = "Quaternion:\n"
   result.add(fmt" w: {q[0]:>7.4f}")
   result.add("\n")
@@ -76,10 +76,10 @@ proc `$`*(q: Quaternion): string =
   result.add("\n")
   result.add(fmt" z: {q[3]:>7.4f}")
 
-proc isRotationSequenceValid*(rotSeq: RotationSequence): bool =
+func isRotationSequenceValid*(rotSeq: RotationSequence): bool =
   ## Checks if a rotation sequence represents a valid sequence of three
   ## principal axes than can be used to represent any general rotation
-  if rotSeq.len() != 3:
+  if rotSeq.len != 3:
     return false
 
   const validSeqs = ["xyz", "xzy", "yxz", "yzx",
@@ -87,34 +87,34 @@ proc isRotationSequenceValid*(rotSeq: RotationSequence): bool =
                      "yxy", "yzy", "zxz", "zyz"]
   return validSeqs.contains(rotSeq)
 
-proc transpose*(R: RotationMatrix): RotationMatrix =
+func transpose*(R: RotationMatrix): RotationMatrix =
   ## Calculates the transpose of a rotation matrix.
   result = [[R[0, 0], R[1, 0], R[2, 0]],
             [R[0, 1], R[1, 1], R[2, 1]],
             [R[0, 2], R[1, 2], R[2, 2]]]
 
-proc rotationX(angle: float): RotationMatrix =
+func rotationX(angle: float): RotationMatrix =
   ## Given the angle of rotation, calculates the rotation matrix resulting
   ## from rotating by the angle about the x-axis.
   let c = cos(angle)
   let s = sin(angle)
   result = [[1.0, 0.0, 0.0], [0.0, c, -s], [0.0, s, c]]
 
-proc rotationY(angle: float): RotationMatrix =
+func rotationY(angle: float): RotationMatrix =
   ## Given the angle of rotation, calculates the rotation matrix resulting
   ## from rotating by the angle about the y-axis.
   let c = cos(angle)
   let s = sin(angle)
   result = [[c, 0.0, s], [0.0, 1.0, 0.0], [-s, 0.0, c]]
 
-proc rotationZ(angle: float): RotationMatrix =
+func rotationZ(angle: float): RotationMatrix =
   ## Given the angle of rotation, calculates the rotation matrix resulting
   ## from rotating by the angle about the z-axis.
   let c = cos(angle)
   let s = sin(angle)
   result = [[c, -s, 0.0], [s, c, 0.0], [0.0, 0.0, 1.0]]
 
-proc rotationActive(axis: char, angle: float): RotationMatrix =
+func rotationActive(axis: char, angle: float): RotationMatrix =
   ## Given the angle and axis of rotation, calculates the rotation matrix
   ## resulting from rotating by the angle about the axis.
   case axis
@@ -127,7 +127,7 @@ proc rotationActive(axis: char, angle: float): RotationMatrix =
   else:
     raise newException(ValueError, "Axis can only be x, y, or z")
 
-proc toRotationMatrix*(rotSeq: RotationSequence, rotAngles: RotationAngles,
+func toRotationMatrix*(rotSeq: RotationSequence, rotAngles: RotationAngles,
     order: Order, direction: Direction): RotationMatrix =
   ## Calculates a rotation matrix given a sequence of three euler angles and
   ## the order and direction of the rotation
@@ -143,7 +143,7 @@ proc toRotationMatrix*(rotSeq: RotationSequence, rotAngles: RotationAngles,
   if direction == passive:
     result = result.transpose()
 
-proc toQuaternion*(R: RotationMatrix): Quaternion =
+func toQuaternion*(R: RotationMatrix): Quaternion =
   ## Converts a rotation matrix to a unit quaternion
   result[0] = sqrt(max(0.0, 1.0 + R[0, 0] + R[1, 1] + R[2, 2])) / 2.0;
 
