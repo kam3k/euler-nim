@@ -33,16 +33,17 @@ when isMainModule:
     of cmdShortOption, cmdLongOption:
       if p.kind == cmdLongOption and p.key == "": # look for "--"
         break
-      elif p.key == "h" or p.key == "help":
+      case p.key:
+      of "h", "help":
         writeHelp()
         quit(0)
-      elif p.key == "r" or p.key == "radians":
+      of "r", "radians":
         useRadians = true
-      elif p.key == "e" or p.key == "extrinsic":
+      of "e", "extrinsic":
         order = extrinsic
-      elif p.key == "p" or p.key == "passive":
+      of "p", "passive":
         direction = passive
-      elif p.key == "s" or p.key == "sequence":
+      of "s", "sequence":
         sequence = p.val
       else:
         echo "Unrecognized argument: ", p.key, "\n"
